@@ -4,21 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"squaremicroservices/routes"
+	"squaremicroservices/util"
 )
 
 func main() {
-	port := env("PORT", "3000")
-	handler(fmt.Sprintf(":%s", port))
-}
-
-func env(key string, fallback string) string {
-	value := os.Getenv(key)
-	if len(value) == 0 {
-		return fallback
+	config, err := util.LoadConfig(".", "app", "env")
+	if err != nil {
+		log.Fatal(err)
 	}
-	return value
+
+	handler(fmt.Sprintf(":%s", config.PORT))
 }
 
 func handler(address string) error {
