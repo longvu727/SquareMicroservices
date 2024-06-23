@@ -1,10 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
-	"context"
+	"os"
 	"squaremicroservices/db"
 	"squaremicroservices/routes"
 	"squaremicroservices/util"
@@ -12,6 +13,8 @@ import (
 
 func main() {
 	config, err := util.LoadConfig(".", "app", "env")
+	log.SetOutput(os.Stdout)
+
 	if err != nil {
 		log.Fatal(err)
 	}

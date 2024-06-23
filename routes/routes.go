@@ -31,7 +31,7 @@ func home(writer http.ResponseWriter, _ *http.Request) {
 }
 
 type CreateSquareParams struct {
-	SizeLength int
+	SizeLength int `json:"square_size"`
 }
 type CreateSquareResponse struct {
 	SquareGuid   string `json:"square_uuid"`
@@ -63,6 +63,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 		writer.WriteHeader(http.StatusInternalServerError)
 		createSquareResponse.SquareGuid = ""
 		createSquareResponse.ErrorMessage = `Unable to create square`
+		writer.Write(createSquareResponse.toJson())
 		return
 	}
 
