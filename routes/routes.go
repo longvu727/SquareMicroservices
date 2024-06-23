@@ -34,7 +34,7 @@ type CreateSquareParams struct {
 	SquareSize int32 `json:"square_size"`
 }
 type CreateSquareResponse struct {
-	SquareGuid   string `json:"square_uuid"`
+	SquareGUID   string `json:"square_guid"`
 	ErrorMessage string `json:"error_message"`
 }
 
@@ -52,7 +52,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 	json.NewDecoder(request.Body).Decode(&createSquareParams)
 
 	squareGuid := uuid.New()
-	createSquareResponse.SquareGuid = squareGuid.String()
+	createSquareResponse.SquareGUID = squareGuid.String()
 
 	_, err := dbConnect.QUERIES.CreateSquare(ctx, db.CreateSquareParams{
 		SquareGuid: squareGuid.String(),
@@ -61,7 +61,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		createSquareResponse.SquareGuid = ""
+		createSquareResponse.SquareGUID = ""
 		createSquareResponse.ErrorMessage = `Unable to create square`
 		writer.Write(createSquareResponse.toJson())
 		return
