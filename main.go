@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"context"
+	"squaremicroservices/db"
 	"squaremicroservices/routes"
 	"squaremicroservices/util"
 )
@@ -14,15 +16,27 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handler(fmt.Sprintf(":%s", config.PORT))
+	mysql, err := db.NewMySQL(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx := context.Background()
+
+	handler(config, mysql, ctx)
 }
 
-func handler(address string) error {
-	routes.Register()
+func handler(config util.Config, db *db.MySQL, ctx context.Context) error {
+
+	routes.Register(db, ctx)
+
+	address := fmt.Sprintf(":%s", config.PORT)
 	log.Printf("Listening on %s", address)
+
 	err := http.ListenAndServe(address, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return nil
 }
