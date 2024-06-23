@@ -31,7 +31,7 @@ func home(writer http.ResponseWriter, _ *http.Request) {
 }
 
 type CreateSquareParams struct {
-	SizeLength int `json:"square_size"`
+	SizeLength int32 `json:"square_size"`
 }
 type CreateSquareResponse struct {
 	SquareGuid   string `json:"square_uuid"`
@@ -56,7 +56,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 
 	_, err := dbConnect.QUERIES.CreateSquare(ctx, db.CreateSquareParams{
 		SquareGuid: squareGuid.String(),
-		SideLength: sql.NullInt32{Int32: 10, Valid: true},
+		SideLength: sql.NullInt32{Int32: createSquareParams.SizeLength, Valid: true},
 	})
 
 	if err != nil {
