@@ -26,7 +26,7 @@ func Register(db *db.MySQL, ctx context.Context) {
 	})
 }
 
-func home(writer http.ResponseWriter, request *http.Request) {
+func home(writer http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintf(writer, "{\"Acknowledged\": true}")
 }
 
