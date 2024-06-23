@@ -46,6 +46,8 @@ func (response CreateSquareResponse) toJson() []byte {
 func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *db.MySQL, ctx context.Context) {
 	log.Printf("Received request for %s\n", request.URL.Path)
 
+	writer.Header().Set("Content-Type", "application/json")
+
 	var createSquareResponse CreateSquareResponse
 	var createSquareParams CreateSquareParams
 
