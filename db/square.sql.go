@@ -12,7 +12,7 @@ import (
 
 const createSquare = `-- name: CreateSquare :execresult
 INSERT INTO squares (
-  square_guid, side_length
+  square_guid, square_size
 ) VALUES (
   ?, ?
 )
@@ -20,9 +20,9 @@ INSERT INTO squares (
 
 type CreateSquareParams struct {
 	SquareGuid string
-	SideLength sql.NullInt32
+	SquareSize sql.NullInt32
 }
 
 func (q *Queries) CreateSquare(ctx context.Context, arg CreateSquareParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createSquare, arg.SquareGuid, arg.SideLength)
+	return q.db.ExecContext(ctx, createSquare, arg.SquareGuid, arg.SquareSize)
 }

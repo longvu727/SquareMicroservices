@@ -58,7 +58,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 
 	_, err := dbConnect.QUERIES.CreateSquare(ctx, db.CreateSquareParams{
 		SquareGuid: squareGuid.String(),
-		SideLength: sql.NullInt32{Int32: createSquareParams.SquareSize, Valid: true},
+		SquareSize: sql.NullInt32{Int32: createSquareParams.SquareSize, Valid: true},
 	})
 
 	if err != nil {

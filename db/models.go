@@ -8,16 +8,6 @@ import (
 	"database/sql"
 )
 
-type Cell struct {
-	GameID   int32
-	GameGuid sql.NullString
-	Sport    sql.NullString
-	TeamA    sql.NullString
-	TeamB    sql.NullString
-	Created  sql.NullTime
-	Updated  sql.NullTime
-}
-
 type FootballSquareGame struct {
 	FootballSquareGameID int32
 	GameID               sql.NullInt32
@@ -31,10 +21,20 @@ type FootballSquareGame struct {
 	Updated              sql.NullTime
 }
 
+type Game struct {
+	GameID   int32
+	GameGuid sql.NullString
+	Sport    sql.NullString
+	TeamA    sql.NullString
+	TeamB    sql.NullString
+	Created  sql.NullTime
+	Updated  sql.NullTime
+}
+
 type Square struct {
 	SquareID     int32
 	SquareGuid   string
-	SideLength   sql.NullInt32
+	SquareSize   sql.NullInt32
 	RowPoints    sql.NullString
 	ColumnPoints sql.NullString
 	Created      sql.NullTime
