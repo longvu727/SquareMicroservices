@@ -18,7 +18,7 @@ type CreateSquareParams struct {
 	TeamB      string `json:"team_b"`
 }
 type CreateSquareResponse struct {
-	SquareGUID   string `json:"square_guid"`
+	GameGUID     string `json:"game_guid"`
 	ErrorMessage string `json:"error_message"`
 }
 
@@ -35,7 +35,7 @@ func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.My
 		return createDBFootballSquareGame(ctx, createSquareParams, dbConnect)
 	}
 
-	return nil, errors.New(`unknown sport`)
+	return &CreateSquareResponse{}, errors.New(`unknown sport`)
 }
 
 func createDBFootballSquareGame(ctx context.Context, createSquareParams CreateSquareParams, dbConnect *db.MySQL) (*CreateSquareResponse, error) {
@@ -57,7 +57,7 @@ func createDBFootballSquareGame(ctx context.Context, createSquareParams CreateSq
 		return nil, err
 	}
 
-	createSquareResponse.SquareGUID = squareGuid.String()
+	createSquareResponse.GameGUID = squareGuid.String()
 	return &createSquareResponse, err
 }
 
