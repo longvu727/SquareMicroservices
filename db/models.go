@@ -23,7 +23,7 @@ type FootballSquareGame struct {
 
 type Game struct {
 	GameID   int32
-	GameGuid sql.NullString
+	GameGuid string
 	Sport    sql.NullString
 	TeamA    sql.NullString
 	TeamB    sql.NullString
@@ -43,7 +43,7 @@ type Square struct {
 
 type User struct {
 	UserID     int32
-	UserGuid   sql.NullString
+	UserGuid   string
 	Ip         sql.NullString
 	DeviceName sql.NullString
 	UserName   sql.NullString

@@ -10,6 +10,8 @@ import (
 )
 
 type Querier interface {
+	CreateFootballSquareGame(ctx context.Context, arg CreateFootballSquareGameParams) (sql.Result, error)
+	CreateGames(ctx context.Context, arg CreateGamesParams) (sql.Result, error)
 	CreateSquare(ctx context.Context, arg CreateSquareParams) (sql.Result, error)
 }
 
