@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	config, err := util.LoadConfig(".", "app", "env")
+	config, err := util.LoadConfig("./env", "app", "env")
 	log.SetOutput(os.Stdout)
 
 	if err != nil {
