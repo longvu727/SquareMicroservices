@@ -26,6 +26,10 @@ func (response CreateSquareResponse) ToJson() []byte {
 }
 
 func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (CreateSquareResponse, error) {
+	return createDBFootballSquareGame(ctx, request, dbConnect)
+}
+
+func createDBFootballSquareGame(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (CreateSquareResponse, error) {
 	var createSquareResponse CreateSquareResponse
 	var createSquareParams CreateSquareParams
 
