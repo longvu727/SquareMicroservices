@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"squaremicroservices/db"
 
@@ -11,6 +12,7 @@ import (
 )
 
 type CreateSquareParams struct {
+	Sport      string `json:"sport"`
 	SquareSize int32  `json:"square_size"`
 	TeamA      string `json:"team_a"`
 	TeamB      string `json:"team_b"`
@@ -26,15 +28,19 @@ func (response CreateSquareResponse) ToJson() []byte {
 }
 
 func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (*CreateSquareResponse, error) {
-	return createDBFootballSquareGame(ctx, request, dbConnect)
-}
-
-func createDBFootballSquareGame(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (*CreateSquareResponse, error) {
-	var createSquareResponse CreateSquareResponse
-	squareGuid := uuid.New()
-
 	var createSquareParams CreateSquareParams
 	json.NewDecoder(request.Body).Decode(&createSquareParams)
+
+	if createSquareParams.Sport == "football" {
+		return createDBFootballSquareGame(ctx, createSquareParams, dbConnect)
+	}
+
+	return nil, errors.New(`unknown sport`)
+}
+
+func createDBFootballSquareGame(ctx context.Context, createSquareParams CreateSquareParams, dbConnect *db.MySQL) (*CreateSquareResponse, error) {
+	var createSquareResponse CreateSquareResponse
+	squareGuid := uuid.New()
 
 	squareID, err := insertSquare(ctx, dbConnect, squareGuid, int(createSquareParams.SquareSize))
 	if err != nil {

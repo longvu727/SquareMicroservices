@@ -21,6 +21,10 @@ func Register(db *db.MySQL, ctx context.Context) {
 	http.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
 		createSquare(w, r, db, ctx)
 	})
+
+	http.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
+		getSquare(w, r, db, ctx)
+	})
 }
 
 func home(writer http.ResponseWriter, _ *http.Request) {
@@ -44,4 +48,23 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 
 	writer.WriteHeader(http.StatusOK)
 	writer.Write(createSquareResponse.ToJson())
+}
+
+func getSquare(writer http.ResponseWriter, request *http.Request, dbConnect *db.MySQL, ctx context.Context) {
+	log.Printf("Received request for %s\n", request.URL.Path)
+
+	writer.Header().Set("Content-Type", "application/json")
+
+	getSquareResponse, err := app.GetDBSquare(ctx, request, dbConnect)
+
+	if err != nil {
+		writer.WriteHeader(http.StatusInternalServerError)
+		getSquareResponse.SquareGUID = ""
+		getSquareResponse.ErrorMessage = `Unable to get square`
+		writer.Write(getSquareResponse.ToJson())
+		return
+	}
+
+	writer.WriteHeader(http.StatusOK)
+	writer.Write(getSquareResponse.ToJson())
 }
