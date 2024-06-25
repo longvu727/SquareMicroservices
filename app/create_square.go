@@ -44,45 +44,6 @@ func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.My
 	return &createSquareResponse, nil
 }
 
-/*
-	func generateFootballSquareGame(ctx context.Context, squareSize int, dbConnect *db.MySQL, gameID int64, squareID int64) error {
-		for row := 1; row <= squareSize; row++ {
-			for column := 1; column <= squareSize; column++ {
-				_, err := dbConnect.QUERIES.CreateFootballSquareGame(ctx, db.CreateFootballSquareGameParams{
-					GameID:      sql.NullInt32{Int32: int32(gameID), Valid: true},
-					SquareID:    sql.NullInt32{Int32: int32(squareID), Valid: true},
-					RowIndex:    sql.NullInt32{Int32: int32(row), Valid: true},
-					ColumnIndex: sql.NullInt32{Int32: int32(column), Valid: true},
-				})
-
-				if err != nil {
-					return err
-				}
-			}
-		}
-
-		return nil
-	}
-
-	func insertGame(ctx context.Context, dbConnect *db.MySQL, teamA string, teamB string) (int64, error) {
-		gameGuid := uuid.New()
-		createGameResult, err := dbConnect.QUERIES.CreateGames(ctx, db.CreateGamesParams{
-			GameGuid: gameGuid.String(),
-			Sport:    sql.NullString{String: "football", Valid: true},
-			TeamA:    sql.NullString{String: teamA, Valid: true},
-			TeamB:    sql.NullString{String: teamB, Valid: true},
-		})
-		if err != nil {
-			return 0, err
-		}
-
-		gameID, err := createGameResult.LastInsertId()
-		if err != nil {
-			return 0, err
-		}
-		return gameID, nil
-	}
-*/
 func insertSquare(ctx context.Context, dbConnect *db.MySQL, squareGuid string, squareSize int) (int64, error) {
 	createSquareResult, err := dbConnect.QUERIES.CreateSquare(ctx, db.CreateSquareParams{
 		SquareGuid: squareGuid,
