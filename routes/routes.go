@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"squaremicroservices/app"
-	"squaremicroservices/db"
+	"github.com/longvu727/FootballSquaresLibs/DB/db"
 )
 
 type Handler = func(writer http.ResponseWriter, request *http.Request)

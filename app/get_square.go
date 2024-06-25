@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"squaremicroservices/db"
+	"github.com/longvu727/FootballSquaresLibs/DB/db"
 )
 
 type GetSquareParams struct {

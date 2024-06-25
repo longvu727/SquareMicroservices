@@ -5,7 +5,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-	"squaremicroservices/db"
+
+	"github.com/longvu727/FootballSquaresLibs/DB/db"
 
 	"github.com/google/uuid"
 )

@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"squaremicroservices/db"
 	"squaremicroservices/routes"
-	"squaremicroservices/util"
+
+	"github.com/longvu727/FootballSquaresLibs/DB/db"
+	"github.com/longvu727/FootballSquaresLibs/util"
 )
 
 func main() {
