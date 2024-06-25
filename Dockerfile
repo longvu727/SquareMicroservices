@@ -12,7 +12,7 @@ RUN mkdir -p /root/.ssh && \
     chmod 644 /root/.ssh/known_hosts && touch /root/.ssh/config \
     && echo "StrictHostKeyChecking no" > /root/.ssh/config
 
-COPY env/.ssh/id_ed25519* /root/.ssh/
+COPY env/.ssh/id_* /root/.ssh/
 
 ENV GOOS=linux GOARCH=amd64
 
