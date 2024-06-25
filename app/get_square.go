@@ -36,7 +36,7 @@ func GetDBSquare(ctx context.Context, request *http.Request, dbConnect *db.MySQL
 	}
 
 	getSquareResponse.SquareID = int(squareRow.SquareID)
-	getSquareResponse.SquareGuid = squareRow.SquareGuid
+	getSquareResponse.SquareGUID = squareRow.SquareGuid
 	getSquareResponse.SquareSize = int(squareRow.SquareSize.Int32)
 	getSquareResponse.RowPoints = squareRow.RowPoints.String
 	getSquareResponse.ColumnPoints = squareRow.ColumnPoints.String
