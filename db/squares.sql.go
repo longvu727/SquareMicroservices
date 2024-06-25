@@ -26,3 +26,31 @@ type CreateSquareParams struct {
 func (q *Queries) CreateSquare(ctx context.Context, arg CreateSquareParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, createSquare, arg.SquareGuid, arg.SquareSize)
 }
+
+const getSquare = `-- name: GetSquare :one
+SELECT square_id, square_guid, square_size, row_points, column_points
+FROM squares 
+WHERE
+  squares.square_id = ?
+`
+
+type GetSquareRow struct {
+	SquareID     int32
+	SquareGuid   string
+	SquareSize   sql.NullInt32
+	RowPoints    sql.NullString
+	ColumnPoints sql.NullString
+}
+
+func (q *Queries) GetSquare(ctx context.Context, squareID int32) (GetSquareRow, error) {
+	row := q.db.QueryRowContext(ctx, getSquare, squareID)
+	var i GetSquareRow
+	err := row.Scan(
+		&i.SquareID,
+		&i.SquareGuid,
+		&i.SquareSize,
+		&i.RowPoints,
+		&i.ColumnPoints,
+	)
+	return i, err
+}

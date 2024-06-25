@@ -40,7 +40,6 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		createSquareResponse.GameGUID = ""
 		createSquareResponse.ErrorMessage = `Unable to create square`
 		writer.Write(createSquareResponse.ToJson())
 		return
@@ -59,7 +58,6 @@ func getSquare(writer http.ResponseWriter, request *http.Request, dbConnect *db.
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		getSquareResponse.SquareGUID = ""
 		getSquareResponse.ErrorMessage = `Unable to get square`
 		writer.Write(getSquareResponse.ToJson())
 		return
