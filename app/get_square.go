@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
 	"github.com/longvu727/FootballSquaresLibs/DB/db"
+	squaremicroservices "github.com/longvu727/FootballSquaresLibs/services/square_microservices"
 )
 
 type GetSquareParams struct {
@@ -12,11 +14,7 @@ type GetSquareParams struct {
 }
 
 type GetSquareResponse struct {
-	SquareID     int    `json:"square_id"`
-	SquareGUID   string `json:"square_guid"`
-	SquareSize   int    `json:"square_size"`
-	RowPoints    string `json:"row_points"`
-	ColumnPoints string `json:"column_points"`
+	squaremicroservices.Square
 	ErrorMessage string `json:"error_message"`
 }
 
