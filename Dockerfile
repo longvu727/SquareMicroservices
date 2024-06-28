@@ -3,7 +3,6 @@ RUN apk add --no-cache git \
                 openssh-client \
                 ca-certificates
 
-ENV GOPRIVATE="github.com/longvu727/FootballSquaresLibs"
 RUN git config --global url."ssh://git@github.com/".insteadOf "https://github.com/"
 
 RUN mkdir -p /root/.ssh && \
