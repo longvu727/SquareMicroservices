@@ -18,7 +18,7 @@ type Routes struct {
 	Apps app.Square
 }
 
-type Handler = func(writer http.ResponseWriter, request *http.Request)
+type Handler = func(writer http.ResponseWriter, request *http.Request, resources *resources.Resources)
 
 func NewRoutes() RoutesInterface {
 	return &Routes{
@@ -30,22 +30,22 @@ func (routes *Routes) Register(resources *resources.Resources) *http.ServeMux {
 	log.Println("Registering routes")
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		routes.home(w, r)
-	})
+	routesHandlersMap := map[string]Handler{
+		"/":                                routes.home,
+		http.MethodPost + " /CreateSquare": routes.createSquare,
+		http.MethodPost + " /GetSquare":    routes.getSquare,
+	}
 
-	mux.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
-		routes.createSquare(w, r, resources)
-	})
-
-	mux.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
-		routes.getSquare(w, r, resources)
-	})
+	for route, handler := range routesHandlersMap {
+		mux.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
+			handler(w, r, resources)
+		})
+	}
 
 	return mux
 }
 
-func (routes *Routes) home(writer http.ResponseWriter, _ *http.Request) {
+func (routes *Routes) home(writer http.ResponseWriter, _ *http.Request, resources *resources.Resources) {
 	fmt.Fprintf(writer, "{\"Acknowledged\": true}")
 }
 
