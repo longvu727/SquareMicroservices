@@ -1,12 +1,10 @@
 package app
 
 import (
-	"context"
 	"encoding/json"
-	"net/http"
 
-	"github.com/longvu727/FootballSquaresLibs/DB/db"
 	squaremicroservices "github.com/longvu727/FootballSquaresLibs/services/square_microservices"
+	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
 type GetSquareParams struct {
@@ -23,12 +21,10 @@ func (response GetSquareResponse) ToJson() []byte {
 	return jsonStr
 }
 
-func GetDBSquare(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (*GetSquareResponse, error) {
+func (squareApp *SquareApp) GetDBSquare(getSquareParams GetSquareParams, resources *resources.Resources) (*GetSquareResponse, error) {
 	var getSquareResponse GetSquareResponse
-	var getSquareParams GetSquareParams
-	json.NewDecoder(request.Body).Decode(&getSquareParams)
 
-	squareRow, err := dbConnect.QUERIES.GetSquare(ctx, int32(getSquareParams.SquareID))
+	squareRow, err := resources.DB.GetSquare(resources.Context, int32(getSquareParams.SquareID))
 	if err != nil {
 		return &getSquareResponse, err
 	}

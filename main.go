@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"squaremicroservices/routes"
 
 	"github.com/longvu727/FootballSquaresLibs/DB/db"
 	"github.com/longvu727/FootballSquaresLibs/util"
+	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
 func main() {
 	config, err := util.LoadConfig("./env", "app", "env")
-	log.SetOutput(os.Stdout)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,15 +24,14 @@ func main() {
 	}
 
 	ctx := context.Background()
-
-	handler(config, mysql, ctx)
+	resources := resources.NewResources(config, mysql, ctx)
+	handler(resources)
 }
 
-func handler(config util.Config, db *db.MySQL, ctx context.Context) error {
+func handler(resources *resources.Resources) error {
+	routes.Register(resources)
 
-	routes.Register(db, ctx)
-
-	address := fmt.Sprintf(":%s", config.PORT)
+	address := fmt.Sprintf(":%s", resources.Config.PORT)
 	log.Printf("Listening on %s", address)
 
 	err := http.ListenAndServe(address, nil)

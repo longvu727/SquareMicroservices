@@ -1,17 +1,18 @@
 package routes
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"squaremicroservices/app"
-	"github.com/longvu727/FootballSquaresLibs/DB/db"
+
+	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
 type Handler = func(writer http.ResponseWriter, request *http.Request)
 
-func Register(db *db.MySQL, ctx context.Context) {
+func Register(resources *resources.Resources) {
 	log.Println("Registering routes")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -19,11 +20,11 @@ func Register(db *db.MySQL, ctx context.Context) {
 	})
 
 	http.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
-		createSquare(w, r, db, ctx)
+		createSquare(w, r, resources)
 	})
 
 	http.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
-		getSquare(w, r, db, ctx)
+		getSquare(w, r, resources)
 	})
 }
 
@@ -31,12 +32,15 @@ func home(writer http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintf(writer, "{\"Acknowledged\": true}")
 }
 
-func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *db.MySQL, ctx context.Context) {
+func createSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
 	log.Printf("Received request for %s\n", request.URL.Path)
 
 	writer.Header().Set("Content-Type", "application/json")
 
-	createSquareResponse, err := app.CreateDBSquare(ctx, request, dbConnect)
+	var createSquareParams app.CreateSquareParams
+	json.NewDecoder(request.Body).Decode(&createSquareParams)
+
+	createSquareResponse, err := app.NewSquareApp().CreateDBSquare(createSquareParams, resources)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -49,12 +53,15 @@ func createSquare(writer http.ResponseWriter, request *http.Request, dbConnect *
 	writer.Write(createSquareResponse.ToJson())
 }
 
-func getSquare(writer http.ResponseWriter, request *http.Request, dbConnect *db.MySQL, ctx context.Context) {
+func getSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
 	log.Printf("Received request for %s\n", request.URL.Path)
 
 	writer.Header().Set("Content-Type", "application/json")
 
-	getSquareResponse, err := app.GetDBSquare(ctx, request, dbConnect)
+	var getSquareParams app.GetSquareParams
+	json.NewDecoder(request.Body).Decode(&getSquareParams)
+
+	getSquareResponse, err := app.NewSquareApp().GetDBSquare(getSquareParams, resources)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)

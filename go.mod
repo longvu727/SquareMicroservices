@@ -3,8 +3,9 @@ module squaremicroservices
 go 1.22.2
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
-	github.com/longvu727/FootballSquaresLibs v0.0.0-20240627181522-762ee2ced757
+	github.com/longvu727/FootballSquaresLibs v0.0.0-20240703225358-8063be5d102b
 	github.com/stretchr/testify v1.9.0
 )
 

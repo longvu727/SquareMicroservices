@@ -1,12 +1,11 @@
 package app
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
-	"net/http"
 
 	"github.com/longvu727/FootballSquaresLibs/DB/db"
+	"github.com/longvu727/FootballSquaresLibs/util/resources"
 
 	"github.com/google/uuid"
 )
@@ -25,15 +24,15 @@ func (response CreateSquareResponse) ToJson() []byte {
 	return jsonStr
 }
 
-func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.MySQL) (*CreateSquareResponse, error) {
-	var createSquareParams CreateSquareParams
-	json.NewDecoder(request.Body).Decode(&createSquareParams)
-
+func (squareApp *SquareApp) CreateDBSquare(createSquareParams CreateSquareParams, resources *resources.Resources) (*CreateSquareResponse, error) {
 	var createSquareResponse CreateSquareResponse
 
 	squareGuid := (uuid.New()).String()
 
-	squareID, err := insertSquare(ctx, dbConnect, squareGuid, int(createSquareParams.SquareSize))
+	squareID, err := resources.DB.CreateSquare(resources.Context, db.CreateSquareParams{
+		SquareGuid: squareGuid,
+		SquareSize: sql.NullInt32{Int32: int32(createSquareParams.SquareSize), Valid: true},
+	})
 	if err != nil {
 		return &createSquareResponse, err
 	}
@@ -42,21 +41,4 @@ func CreateDBSquare(ctx context.Context, request *http.Request, dbConnect *db.My
 	createSquareResponse.SquareID = squareID
 
 	return &createSquareResponse, nil
-}
-
-func insertSquare(ctx context.Context, dbConnect *db.MySQL, squareGuid string, squareSize int) (int64, error) {
-	createSquareResult, err := dbConnect.QUERIES.CreateSquare(ctx, db.CreateSquareParams{
-		SquareGuid: squareGuid,
-		SquareSize: sql.NullInt32{Int32: int32(squareSize), Valid: true},
-	})
-	if err != nil {
-		return 0, err
-	}
-
-	squareID, err := createSquareResult.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return squareID, nil
 }
