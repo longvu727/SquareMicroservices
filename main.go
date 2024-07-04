@@ -29,6 +29,7 @@ func main() {
 }
 
 func handler(resources *resources.Resources) error {
+	routes := routes.NewRoutes()
 	routes.Register(resources)
 
 	address := fmt.Sprintf(":%s", resources.Config.PORT)

@@ -2,17 +2,14 @@ package routes
 
 import (
 	"bytes"
-	"database/sql"
 	"net/http"
 	"net/http/httptest"
+	"squaremicroservices/app"
+	mocksquareapp "squaremicroservices/app/mock"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	"github.com/longvu727/FootballSquaresLibs/DB/db"
-	mockdb "github.com/longvu727/FootballSquaresLibs/DB/db/mock"
-	"github.com/longvu727/FootballSquaresLibs/util"
-	"github.com/longvu727/FootballSquaresLibs/util/resources"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -20,28 +17,24 @@ type RoutesTestSuite struct {
 	suite.Suite
 }
 
-func (suite *RoutesTestSuite) SetupTest() {}
-
 func (suite *RoutesTestSuite) TestCreateSquare() {
-	mockMySQL := mockdb.NewMockMySQL(gomock.NewController(suite.T()))
-	mockMySQL.EXPECT().
-		CreateSquare(gomock.Any(), gomock.Any()).
-		Times(1).
-		Return(int64(10), nil)
+	ctrl := gomock.NewController(suite.T())
 
 	req, err := http.NewRequest(http.MethodPost, "/CreateSquare", bytes.NewBuffer([]byte(`{"side_length":10}`)))
 	suite.NoError(err)
 
-	// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	httpRecorder := httptest.NewRecorder()
 
-	config, err := util.LoadConfig("../env", "app", "env")
-	suite.NoError(err)
+	mockSquare := mocksquareapp.NewMockSquare(ctrl)
+	mockSquare.EXPECT().
+		CreateDBSquare(gomock.Any(), gomock.Any()).
+		Times(1).
+		Return(&app.CreateSquareResponse{SquareID: 10, SquareGUID: uuid.NewString()}, nil)
 
-	resources := resources.NewResources(config, mockMySQL, req.Context())
+	routes := Routes{Apps: mockSquare}
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		createSquare(w, r, resources)
+		routes.createSquare(w, r, nil)
 	})
 	handler.ServeHTTP(httpRecorder, req)
 
@@ -49,31 +42,30 @@ func (suite *RoutesTestSuite) TestCreateSquare() {
 }
 
 func (suite *RoutesTestSuite) TestGetSquare() {
-	mockMySQL := mockdb.NewMockMySQL(gomock.NewController(suite.T()))
-	mockMySQL.EXPECT().
-		GetSquare(gomock.Any(), gomock.Eq(int32(10))).
-		Times(1).
-		Return(db.GetSquareRow{
-			SquareID:     10,
-			SquareGuid:   uuid.NewString(),
-			SquareSize:   sql.NullInt32{Int32: 10, Valid: true},
-			RowPoints:    sql.NullString{String: "", Valid: true},
-			ColumnPoints: sql.NullString{String: "", Valid: true},
-		}, nil)
+	ctrl := gomock.NewController(suite.T())
 
 	req, err := http.NewRequest(http.MethodPost, "/GetSquare", bytes.NewBuffer([]byte(`{"square_id":10}`)))
 	suite.NoError(err)
 
-	// We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	httpRecorder := httptest.NewRecorder()
 
-	config, err := util.LoadConfig("../env", "app", "env")
-	suite.NoError(err)
+	returnSquare := &app.GetSquareResponse{}
+	returnSquare.SquareID = 10
+	returnSquare.SquareGUID = uuid.NewString()
+	returnSquare.SquareSize = 10
+	returnSquare.RowPoints = ""
+	returnSquare.ColumnPoints = ""
 
-	resources := resources.NewResources(config, mockMySQL, req.Context())
+	mockSquare := mocksquareapp.NewMockSquare(ctrl)
+	mockSquare.EXPECT().
+		GetDBSquare(gomock.Any(), gomock.Any()).
+		Times(1).
+		Return(returnSquare, nil)
+
+	routes := Routes{Apps: mockSquare}
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		getSquare(w, r, resources)
+		routes.getSquare(w, r, nil)
 	})
 	handler.ServeHTTP(httpRecorder, req)
 

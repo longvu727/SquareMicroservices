@@ -10,29 +10,46 @@ import (
 	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
+type RoutesInterface interface {
+	Register(resources *resources.Resources)
+	home(writer http.ResponseWriter, _ *http.Request)
+	createSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources)
+	getSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources)
+}
+
+type Routes struct {
+	Apps app.Square
+}
+
 type Handler = func(writer http.ResponseWriter, request *http.Request)
 
-func Register(resources *resources.Resources) {
+func NewRoutes() RoutesInterface {
+	return &Routes{
+		Apps: app.NewSquareApp(),
+	}
+}
+
+func (routes *Routes) Register(resources *resources.Resources) {
 	log.Println("Registering routes")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		home(w, r)
+		routes.home(w, r)
 	})
 
 	http.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
-		createSquare(w, r, resources)
+		routes.createSquare(w, r, resources)
 	})
 
 	http.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
-		getSquare(w, r, resources)
+		routes.getSquare(w, r, resources)
 	})
 }
 
-func home(writer http.ResponseWriter, _ *http.Request) {
+func (routes *Routes) home(writer http.ResponseWriter, _ *http.Request) {
 	fmt.Fprintf(writer, "{\"Acknowledged\": true}")
 }
 
-func createSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
+func (routes *Routes) createSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
 	log.Printf("Received request for %s\n", request.URL.Path)
 
 	writer.Header().Set("Content-Type", "application/json")
@@ -40,7 +57,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, resources *
 	var createSquareParams app.CreateSquareParams
 	json.NewDecoder(request.Body).Decode(&createSquareParams)
 
-	createSquareResponse, err := app.NewSquareApp().CreateDBSquare(createSquareParams, resources)
+	createSquareResponse, err := routes.Apps.CreateDBSquare(createSquareParams, resources)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
@@ -53,7 +70,7 @@ func createSquare(writer http.ResponseWriter, request *http.Request, resources *
 	writer.Write(createSquareResponse.ToJson())
 }
 
-func getSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
+func (routes *Routes) getSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources) {
 	log.Printf("Received request for %s\n", request.URL.Path)
 
 	writer.Header().Set("Content-Type", "application/json")
@@ -61,7 +78,7 @@ func getSquare(writer http.ResponseWriter, request *http.Request, resources *res
 	var getSquareParams app.GetSquareParams
 	json.NewDecoder(request.Body).Decode(&getSquareParams)
 
-	getSquareResponse, err := app.NewSquareApp().GetDBSquare(getSquareParams, resources)
+	getSquareResponse, err := routes.Apps.GetDBSquare(getSquareParams, resources)
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
