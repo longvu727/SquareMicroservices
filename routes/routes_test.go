@@ -18,9 +18,11 @@ type RoutesTestSuite struct {
 }
 
 func (suite *RoutesTestSuite) TestCreateSquare() {
+
+	url := "/CreateSquare"
 	ctrl := gomock.NewController(suite.T())
 
-	req, err := http.NewRequest(http.MethodPost, "/CreateSquare", bytes.NewBuffer([]byte(`{"side_length":10}`)))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(`{"side_length":10}`)))
 	suite.NoError(err)
 
 	httpRecorder := httptest.NewRecorder()
@@ -32,19 +34,22 @@ func (suite *RoutesTestSuite) TestCreateSquare() {
 		Return(&app.CreateSquareResponse{SquareID: 10, SquareGUID: uuid.NewString()}, nil)
 
 	routes := Routes{Apps: mockSquare}
+	serveMux := routes.Register(nil)
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		routes.createSquare(w, r, nil)
-	})
+	handler, pattern := serveMux.Handler(req)
+	suite.Equal(http.MethodPost+" "+url, pattern)
+
 	handler.ServeHTTP(httpRecorder, req)
 
 	suite.Equal(httpRecorder.Code, http.StatusOK)
 }
 
 func (suite *RoutesTestSuite) TestGetSquare() {
+
+	url := "/GetSquare"
 	ctrl := gomock.NewController(suite.T())
 
-	req, err := http.NewRequest(http.MethodPost, "/GetSquare", bytes.NewBuffer([]byte(`{"square_id":10}`)))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer([]byte(`{"square_id":10}`)))
 	suite.NoError(err)
 
 	httpRecorder := httptest.NewRecorder()
@@ -63,10 +68,30 @@ func (suite *RoutesTestSuite) TestGetSquare() {
 		Return(returnSquare, nil)
 
 	routes := Routes{Apps: mockSquare}
+	serveMux := routes.Register(nil)
 
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		routes.getSquare(w, r, nil)
-	})
+	handler, pattern := serveMux.Handler(req)
+	suite.Equal(http.MethodPost+" "+url, pattern)
+
+	handler.ServeHTTP(httpRecorder, req)
+
+	suite.Equal(httpRecorder.Code, http.StatusOK)
+}
+
+func (suite *RoutesTestSuite) TestHome() {
+
+	url := "/"
+	req, err := http.NewRequest(http.MethodPost, url, nil)
+	suite.NoError(err)
+
+	httpRecorder := httptest.NewRecorder()
+
+	routes := NewRoutes()
+	serveMux := routes.Register(nil)
+
+	handler, pattern := serveMux.Handler(req)
+	suite.Equal(url, pattern)
+
 	handler.ServeHTTP(httpRecorder, req)
 
 	suite.Equal(httpRecorder.Code, http.StatusOK)

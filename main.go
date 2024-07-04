@@ -12,33 +12,57 @@ import (
 	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
+type api struct {
+	routes  routes.RoutesInterface
+	address string
+	server  *http.Server
+}
+
 func main() {
-	config, err := util.LoadConfig("./env", "app", "env")
+	resources, err := getResourcesFromConfigFile("./env", "app", "env")
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	api := &api{
+		routes:  routes.NewRoutes(),
+		address: fmt.Sprintf(":%s", resources.Config.PORT),
+		server:  &http.Server{},
+	}
+
+	_ = api.start(resources)
+}
+
+func getResourcesFromConfigFile(path string, configName string, configType string) (*resources.Resources, error) {
+	config, err := util.LoadConfig(path, configName, configType)
+	if err != nil {
+		return nil, err
 	}
 
 	mysql, err := db.NewMySQL(config)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	ctx := context.Background()
 	resources := resources.NewResources(config, mysql, ctx)
-	handler(resources)
+
+	return resources, nil
 }
 
-func handler(resources *resources.Resources) error {
-	routes := routes.NewRoutes()
-	routes.Register(resources)
+func (api *api) start(resources *resources.Resources) error {
+	log.Printf("Listening on %s", api.address)
 
-	address := fmt.Sprintf(":%s", resources.Config.PORT)
-	log.Printf("Listening on %s", address)
+	mux := api.routes.Register(resources)
 
-	err := http.ListenAndServe(address, nil)
+	api.server.Addr = api.address
+	api.server.Handler = mux
+
+	err := api.server.ListenAndServe()
+
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
-	return nil
+	return err
 }

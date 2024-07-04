@@ -11,10 +11,7 @@ import (
 )
 
 type RoutesInterface interface {
-	Register(resources *resources.Resources)
-	home(writer http.ResponseWriter, _ *http.Request)
-	createSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources)
-	getSquare(writer http.ResponseWriter, request *http.Request, resources *resources.Resources)
+	Register(resources *resources.Resources) *http.ServeMux
 }
 
 type Routes struct {
@@ -29,20 +26,23 @@ func NewRoutes() RoutesInterface {
 	}
 }
 
-func (routes *Routes) Register(resources *resources.Resources) {
+func (routes *Routes) Register(resources *resources.Resources) *http.ServeMux {
 	log.Println("Registering routes")
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		routes.home(w, r)
 	})
 
-	http.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(http.MethodPost+" /CreateSquare", func(w http.ResponseWriter, r *http.Request) {
 		routes.createSquare(w, r, resources)
 	})
 
-	http.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(http.MethodPost+" /GetSquare", func(w http.ResponseWriter, r *http.Request) {
 		routes.getSquare(w, r, resources)
 	})
+
+	return mux
 }
 
 func (routes *Routes) home(writer http.ResponseWriter, _ *http.Request) {
