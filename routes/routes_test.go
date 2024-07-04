@@ -97,6 +97,6 @@ func (suite *RoutesTestSuite) TestHome() {
 	suite.Equal(httpRecorder.Code, http.StatusOK)
 }
 
-func TestGetSquareTestSuite(t *testing.T) {
+func TestRoutesTestSuite(t *testing.T) {
 	suite.Run(t, new(RoutesTestSuite))
 }

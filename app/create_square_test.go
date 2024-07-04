@@ -18,7 +18,7 @@ type CreateSquareTestSuite struct {
 func (suite *CreateSquareTestSuite) SetupTest() {
 }
 
-func (suite *CreateSquareTestSuite) TestGetSquare() {
+func (suite *CreateSquareTestSuite) TestCreateSquare() {
 	randomSquare := randomSquare()
 
 	ctrl := gomock.NewController(suite.T())
