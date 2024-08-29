@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -15,7 +16,8 @@ type CreateSquareTestSuite struct {
 	suite.Suite
 }
 
-func (suite *CreateSquareTestSuite) SetupTest() {
+func TestCreateSquareTestSuite(t *testing.T) {
+	suite.Run(t, new(CreateSquareTestSuite))
 }
 
 func (suite *CreateSquareTestSuite) TestCreateSquare() {
@@ -43,8 +45,26 @@ func (suite *CreateSquareTestSuite) TestCreateSquare() {
 	suite.NoError(err)
 
 	suite.Equal(randomSquare.SquareID, int32(square.SquareID))
+
+	suite.Greater(len(square.ToJson()), 0)
 }
 
-func TestCreateSquareTestSuite(t *testing.T) {
-	suite.Run(t, new(CreateSquareTestSuite))
+func (suite *CreateSquareTestSuite) TestCreateSquareError() {
+	ctrl := gomock.NewController(suite.T())
+	defer ctrl.Finish()
+
+	mockMySQL := mockdb.NewMockMySQL(ctrl)
+
+	mockMySQL.EXPECT().
+		CreateSquare(gomock.Any(), gomock.Any()).
+		Times(1).
+		Return(int64(0), errors.New("test error"))
+
+	config, err := util.LoadConfig("../env", "app", "env")
+	suite.NoError(err)
+
+	resources := resources.NewResources(config, mockMySQL, context.Background())
+
+	_, err = NewSquareApp().CreateDBSquare(CreateSquareParams{}, resources)
+	suite.Error(err)
 }
