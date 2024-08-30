@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	db "github.com/longvu727/FootballSquaresLibs/DB/db"
 	mockdb "github.com/longvu727/FootballSquaresLibs/DB/db/mock"
+	"github.com/longvu727/FootballSquaresLibs/services"
 	"github.com/longvu727/FootballSquaresLibs/util"
 	"github.com/longvu727/FootballSquaresLibs/util/resources"
 	"github.com/stretchr/testify/suite"
@@ -41,7 +42,7 @@ func (suite *GetSquareTestSuite) TestGetSquare() {
 	config, err := util.LoadConfig("../env", "app", "env")
 	suite.NoError(err)
 
-	resources := resources.NewResources(config, mockMySQL, context.Background())
+	resources := resources.NewResources(config, mockMySQL, services.NewServices(), context.Background())
 
 	getSquareParams := GetSquareParams{SquareID: int(randomSquare.SquareID)}
 	square, err := NewSquareApp().GetDBSquare(getSquareParams, resources)
@@ -70,7 +71,7 @@ func (suite *GetSquareTestSuite) TestGetSquareError() {
 	config, err := util.LoadConfig("../env", "app", "env")
 	suite.NoError(err)
 
-	resources := resources.NewResources(config, mockMySQL, context.Background())
+	resources := resources.NewResources(config, mockMySQL, services.NewServices(), context.Background())
 
 	_, err = NewSquareApp().GetDBSquare(GetSquareParams{}, resources)
 	suite.Error(err)

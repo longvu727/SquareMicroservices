@@ -3,7 +3,7 @@ package app
 import (
 	"encoding/json"
 
-	squaremicroservices "github.com/longvu727/FootballSquaresLibs/services/square_microservices"
+	"github.com/longvu727/FootballSquaresLibs/services"
 	"github.com/longvu727/FootballSquaresLibs/util/resources"
 )
 
@@ -12,7 +12,7 @@ type GetSquareParams struct {
 }
 
 type GetSquareResponse struct {
-	squaremicroservices.Square
+	services.Square
 	ErrorMessage string `json:"error_message"`
 }
 

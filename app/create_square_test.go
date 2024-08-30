@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	mockdb "github.com/longvu727/FootballSquaresLibs/DB/db/mock"
+	"github.com/longvu727/FootballSquaresLibs/services"
 	"github.com/longvu727/FootballSquaresLibs/util"
 	"github.com/longvu727/FootballSquaresLibs/util/resources"
 	"github.com/stretchr/testify/suite"
@@ -36,7 +37,7 @@ func (suite *CreateSquareTestSuite) TestCreateSquare() {
 	config, err := util.LoadConfig("../env", "app", "env")
 	suite.NoError(err)
 
-	resources := resources.NewResources(config, mockMySQL, context.Background())
+	resources := resources.NewResources(config, mockMySQL, services.NewServices(), context.Background())
 
 	createSquareParams := CreateSquareParams{
 		SquareSize: randomSquare.SquareSize.Int32,
@@ -63,7 +64,7 @@ func (suite *CreateSquareTestSuite) TestCreateSquareError() {
 	config, err := util.LoadConfig("../env", "app", "env")
 	suite.NoError(err)
 
-	resources := resources.NewResources(config, mockMySQL, context.Background())
+	resources := resources.NewResources(config, mockMySQL, services.NewServices(), context.Background())
 
 	_, err = NewSquareApp().CreateDBSquare(CreateSquareParams{}, resources)
 	suite.Error(err)
