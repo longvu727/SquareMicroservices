@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -61,7 +62,7 @@ func (routes *Routes) createSquare(writer http.ResponseWriter, request *http.Req
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		createSquareResponse.ErrorMessage = `Unable to create square`
+		createSquareResponse.ErrorMessage = `Unable to create square` + err.Error()
 		writer.Write(createSquareResponse.ToJson())
 		return
 	}
@@ -80,9 +81,11 @@ func (routes *Routes) getSquare(writer http.ResponseWriter, request *http.Reques
 
 	getSquareResponse, err := routes.Apps.GetDBSquare(getSquareParams, resources)
 
-	if err != nil {
+	if err != nil && err == sql.ErrNoRows {
+		getSquareResponse.ErrorMessage = `Square not found`
+	} else if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		getSquareResponse.ErrorMessage = `Unable to get square`
+		getSquareResponse.ErrorMessage = `Unable to get square` + err.Error()
 		writer.Write(getSquareResponse.ToJson())
 		return
 	}
